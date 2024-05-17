@@ -25,6 +25,8 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
+	implementation ("org.springframework.boot:spring-boot-starter-data-redis")
+	implementation ("org.springframework.boot:spring-boot-starter-mail")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.security:spring-security-test")
 	implementation("io.jsonwebtoken:jjwt-api:0.11.5")

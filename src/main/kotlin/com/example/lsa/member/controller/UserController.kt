@@ -7,7 +7,6 @@ import com.example.lsa.member.service.CustomUserDetailsService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.crypto.password.PasswordEncoder
-import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.web.bind.annotation.*
 
@@ -19,11 +18,20 @@ class UserController(
     private val userDetailsService: CustomUserDetailsService,
     private val passwordEncoder: PasswordEncoder
 ) {
-
     @PostMapping("/register")
     fun registerUser(@RequestBody userDto: UserDto): ResponseEntity<Any> {
         return try {
-            val user = userService.registerUser(userDto)
+            userService.registerUser(userDto)
+            ResponseEntity.ok("인증메일이 전송되었으니 인증을 완료해주세요")
+        } catch (e: Exception) {
+            ResponseEntity.badRequest().body(e.message)
+        }
+    }
+
+    @PostMapping("/verify")
+    fun verifyCode(@RequestBody verifyDto: VerifyDto): ResponseEntity<Any> {
+        return try {
+            val user = userService.completeRegistration(verifyDto.userDto, verifyDto.code)
             ResponseEntity.ok(user)
         } catch (e: Exception) {
             ResponseEntity.badRequest().body(e.message)
@@ -38,12 +46,12 @@ class UserController(
                 val token = jwtTokenUtil.generateToken(user)
                 ResponseEntity.ok(mapOf("token" to token))
             } else {
-                ResponseEntity.badRequest().body("PASSWORD is not correct")
+                ResponseEntity.badRequest().body("올바르지 않은 비밀번호")
             }
         } catch (e: UsernameNotFoundException) {
-            ResponseEntity.badRequest().body("Invalid username")
+            ResponseEntity.badRequest().body("올바르지 않은 이메일입니다")
         } catch (e: Exception) {
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred during the login process.")
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("로그인 중 에러 발생")
         }
     }
 }

@@ -4,7 +4,8 @@ data class UserDto(
     val username: String,
     val password: String,
     val role: String,
-    val labNames: Set<String>,
-    val staffId: String,   // 사용자의 학번(사번)
-    val name: String       // 사용자의 이름
+    val labs: List<Long> = listOf(),
+    val labNames: List<String> = listOf(),
+    val staffId: String,
+    val name: String,
 )

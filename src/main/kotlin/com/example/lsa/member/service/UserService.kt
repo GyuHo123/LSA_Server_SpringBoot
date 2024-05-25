@@ -52,8 +52,8 @@ class UserService(
 
             val encodedPassword = passwordEncoder.encode(userDto.password)
             val labs = when (userDto.role) {
-                "RESEARCHER" -> findLabsForResearcher(userDto.staffId)
-                else -> setOf()
+                "RESEARCHER" -> findLabsForResearcher(userDto.staffId).toMutableSet()
+                else -> mutableSetOf()
             }
 
             val user = User(
@@ -84,6 +84,11 @@ class UserService(
         if (userRepository.existsByUsername(userDto.username)) {
             throw IllegalStateException("이메일이 존재합니다: ${userDto.username}")
         }
+    }
+
+    fun getUserByStaffId(staffId: String): User? {
+        return userRepository.findByStaffId(staffId)
+            ?: throw IllegalStateException("No user found with staffId: $staffId")
     }
 
     fun getUserDetails(username: String): User {

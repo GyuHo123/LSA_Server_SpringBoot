@@ -8,4 +8,5 @@ import com.example.lsa.member.entity.User
 interface UserRepository : JpaRepository<User, Long> {
     fun findByUsername(username: String): User?
     fun existsByUsername(username: String): Boolean
+    fun findByStaffId(staffId: String): User?  // Add this method to find by staffId
 }

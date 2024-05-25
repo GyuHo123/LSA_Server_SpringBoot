@@ -27,16 +27,13 @@ class SecurityConfig(
         http
             .authorizeHttpRequests { auth ->
                 auth
-                    .requestMatchers("/api/users/register", "/api/users/login", "/api/users/verify").permitAll()
-                    .anyRequest().authenticated()
+                    .requestMatchers("api/labs/respond-to-request").hasRole("RESEARCHER")
+                    .requestMatchers("api/labs/request-membership").hasRole("STUDENT")
+                    .anyRequest().permitAll()
             }
-            .cors { cors -> cors.disable() }
             .csrf { csrf -> csrf.disable() }
-            .httpBasic(Customizer.withDefaults())
-            .formLogin(Customizer.withDefaults())
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
         http.addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter::class.java)
-
         return http.build()
     }
 

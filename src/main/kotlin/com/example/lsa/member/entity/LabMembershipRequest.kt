@@ -10,11 +10,13 @@ class LabMembershipRequest(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
 
-    @Column
-    val user: Long,
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    val user: User,
 
-    @Column(name = "lab_id", nullable = false)
-    val lab: Long,
+    @ManyToOne
+    @JoinColumn(name = "lab_id", nullable = false)
+    val lab: Lab,
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

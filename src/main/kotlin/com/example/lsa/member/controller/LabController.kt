@@ -1,5 +1,6 @@
 package com.example.lsa.member.controller
 
+import com.example.lsa.member.dto.LabMembershipRequestDto
 import com.example.lsa.member.service.LabService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -33,6 +34,18 @@ class LabController(
                 return ResponseEntity.badRequest().body("Error removing membership request.")
             }
         }
+    }
+
+    @GetMapping("/{labId}/membership-requests")
+    fun getLabMembershipRequests(@PathVariable labId: Long): ResponseEntity<List<LabMembershipRequestDto>> {
+        val requests = labService.getMembershipRequestsByLab(labId)
+        return ResponseEntity.ok(requests)
+    }
+
+    @GetMapping("/user/{userId}/membership-requests")
+    fun getUserMembershipRequests(@PathVariable userId: Long): ResponseEntity<List<LabMembershipRequestDto>> {
+        val requests = labService.getMembershipRequestsByUser(userId)
+        return ResponseEntity.ok(requests)
     }
 
 }

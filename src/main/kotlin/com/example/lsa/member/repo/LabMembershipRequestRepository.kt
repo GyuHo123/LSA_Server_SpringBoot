@@ -6,5 +6,6 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface LabMembershipRequestRepository : JpaRepository<LabMembershipRequest, Long> {
-
+    fun findAllByLab_Id(labId: Long): List<LabMembershipRequest>
+    fun findAllByUser_Id(userId: Long): List<LabMembershipRequest>
 }

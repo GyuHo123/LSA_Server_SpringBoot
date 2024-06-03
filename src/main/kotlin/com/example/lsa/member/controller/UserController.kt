@@ -32,7 +32,7 @@ class UserController(
     fun verifyCode(@RequestBody verifyDto: VerifyDto): ResponseEntity<Any> {
         return try {
             val user = userService.completeRegistration(verifyDto.userDto, verifyDto.code)
-            ResponseEntity.ok(user)
+            ResponseEntity.ok("회원가입 완료")
         } catch (e: Exception) {
             ResponseEntity.badRequest().body(e.message)
         }
@@ -44,7 +44,7 @@ class UserController(
             val user = userDetailsService.loadUserByUsername(loginDto.username)
             if (user != null && passwordEncoder.matches(loginDto.password, user.password)) {
                 val token = jwtTokenUtil.generateToken(user)
-                ResponseEntity.ok(mapOf("token" to token))
+                ResponseEntity.ok(mapOf("user" to user.username, "token" to token))
             } else {
                 ResponseEntity.badRequest().body("올바르지 않은 비밀번호")
             }
@@ -54,4 +54,11 @@ class UserController(
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("로그인 중 에러 발생")
         }
     }
+
+    @GetMapping("/{userId}/find-user-info")
+    fun getUserInfo(@PathVariable userId: Long): ResponseEntity<UserInfoDto> {
+        val user = userService.getUserInfo(userId)
+        return ResponseEntity.ok(user)
+    }
+
 }

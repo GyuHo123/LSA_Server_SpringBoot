@@ -13,5 +13,8 @@ class Staff(
     val staffId: String,
 
     @Column(nullable = false)
-    val name: String
+    val name: String,
+
+    @Column(nullable = false)
+    val dept: String
 )

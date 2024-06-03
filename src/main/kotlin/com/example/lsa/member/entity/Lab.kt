@@ -10,5 +10,8 @@ class Lab(
     @Column(unique = true, nullable = false)
     var name: String,
 
-    var directorStaffId: String
+    var directorStaffId: String,
+
+    @Column(nullable = false)
+    var dept: String
 )

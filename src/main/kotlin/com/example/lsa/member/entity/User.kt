@@ -22,14 +22,17 @@ data class User(
     @ManyToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     @JoinTable(
         name = "user_labs",
-        joinColumns = [JoinColumn(name = "user_id")],  // Ensure this matches column in user_labs
-        inverseJoinColumns = [JoinColumn(name = "lab_id")]  // Ensure this matches column in user_labs
+        joinColumns = [JoinColumn(name = "user_id")],
+        inverseJoinColumns = [JoinColumn(name = "lab_id")]
     )
     val labs: MutableSet<Lab> = mutableSetOf(),
 
-    @Column(nullable = false)  // 학번(사번) 필드 추가
+    @Column(nullable = false)
     val staffId: String,
 
-    @Column(nullable = false)  // 이름 필드 추가
-    val name: String
+    @Column(nullable = false)
+    val name: String,
+
+    @Column(nullable = false)
+    val dept: String
 )

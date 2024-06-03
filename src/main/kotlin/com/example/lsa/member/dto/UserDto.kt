@@ -8,4 +8,5 @@ data class UserDto(
     val labNames: List<String> = listOf(),
     val staffId: String,
     val name: String,
+    val dept: String
 )

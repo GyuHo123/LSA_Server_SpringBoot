@@ -2,6 +2,7 @@ package com.example.lsa.member.service
 
 import com.example.lsa.common.service.EmailService
 import com.example.lsa.member.dto.UserDto
+import com.example.lsa.member.dto.UserInfoDto
 import com.example.lsa.member.entity.User
 import com.example.lsa.member.entity.*
 import com.example.lsa.member.repo.UserRepository
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.dao.DataIntegrityViolationException
+import java.util.concurrent.ConcurrentHashMap
 
 @Service
 class UserService(
@@ -21,16 +23,15 @@ class UserService(
     private val staffRepository: StaffRepository,
     private val passwordEncoder: PasswordEncoder,
     private val verificationService: VerificationService,
-    private val emailService: EmailService
+    private val emailService: EmailService,
 ) {
-    private val logger = LoggerFactory.getLogger(UserService::class.java)
-
+    private val tokenBlacklist = ConcurrentHashMap<String, Boolean>()
     @Transactional
     fun registerUser(userDto: UserDto) {
         try {
             validateUser(userDto)
 
-            staffRepository.findByStaffIdAndName(userDto.staffId, userDto.name)
+            staffRepository.findByStaffIdAndNameAndDept(userDto.staffId, userDto.name, userDto.dept)
                 ?: throw IllegalArgumentException("일치하는 인원 없음")
 
             val code = verificationService.generateAndSendVerificationCode(userDto.username)
@@ -38,7 +39,6 @@ class UserService(
 
             throw IllegalStateException("인증메일이 전송되었으니 확인하고 입력해주세요")
         } catch (e: Exception) {
-            logger.error("회원가입 중 오류 발생", e)
             throw e
         }
     }
@@ -62,7 +62,8 @@ class UserService(
                 role = Role.valueOf(userDto.role),
                 labs = labs,
                 staffId = userDto.staffId,
-                name = userDto.name
+                name = userDto.name,
+                dept = userDto.dept
             )
 
             try {
@@ -71,7 +72,6 @@ class UserService(
                 throw IllegalStateException("Duplicate username or other integrity issues", e)
             }
         } catch (e: Exception) {
-            logger.error("Error during user registration completion", e)
             throw e
         }
     }
@@ -94,4 +94,15 @@ class UserService(
     fun getUserDetails(username: String): User {
         return userRepository.findByUsername(username) ?: throw UsernameNotFoundException("이메일을 찾을 수 없습니다: $username")
     }
+
+    fun getUserInfo(userId: Long): UserInfoDto {
+        val user = userRepository.findById(userId).orElseThrow { IllegalArgumentException("User not found") }
+        return UserInfoDto(
+            name = user.name,
+            role = user.role.name,
+            dept = user.dept,
+            staffId = user.staffId
+        )
+    }
 }
+

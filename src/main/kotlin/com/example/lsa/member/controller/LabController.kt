@@ -1,6 +1,8 @@
 package com.example.lsa.member.controller
 
+import com.example.lsa.member.dto.LabDto
 import com.example.lsa.member.dto.LabMembershipRequestDto
+import com.example.lsa.member.dto.UserDto
 import com.example.lsa.member.service.LabService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -48,4 +50,30 @@ class LabController(
         return ResponseEntity.ok(requests)
     }
 
+    @GetMapping("/{labId}/find-membership")
+    fun getLabMembers(@PathVariable labId: Long): ResponseEntity<List<UserDto>> {
+        val members = labService.getLabMembers(labId)
+        return ResponseEntity.ok(members)
+    }
+
+    @GetMapping("/user/{userId}/find-user-labs")
+    fun getUserLabs(@PathVariable userId: Long): ResponseEntity<List<LabDto>> {
+        val labs = labService.getLabsByUser(userId)
+        return ResponseEntity.ok(labs)
+    }
+
+    @GetMapping("/{labId}/find-labs")
+    fun getLabById(@PathVariable labId: Long): ResponseEntity<LabDto> {
+        val lab = labService.findLabById(labId)
+        return ResponseEntity.ok(lab)
+    }
+
+    @PostMapping("/remove-membership")
+    fun removeMembership(@RequestParam userId: Long, @RequestParam labId: Long): ResponseEntity<String> {
+        return if (labService.removeUserFromLab(userId, labId)) {
+            ResponseEntity.ok("User removed from lab successfully")
+        } else {
+            ResponseEntity.badRequest().body("Error removing user from lab")
+        }
+    }
 }

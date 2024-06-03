@@ -1,11 +1,12 @@
 package com.example.lsa.member.service
 
+import com.example.lsa.member.dto.LabDto
 import com.example.lsa.member.dto.LabMembershipRequestDto
+import com.example.lsa.member.dto.UserDto
 import com.example.lsa.member.entity.*
 import com.example.lsa.member.repo.*
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-
 
 @Service
 class LabService(
@@ -54,7 +55,6 @@ class LabService(
         }
     }
 
-    // 특정 labId에 해당하는 연구실의 모든 요청을 가져오는 함수
     fun getMembershipRequestsByLab(labId: Long): List<LabMembershipRequestDto> {
         val requests = requestRepository.findAllByLab_Id(labId)
         return requests.map { request ->
@@ -62,12 +62,14 @@ class LabService(
                 userName = request.user.name,
                 userStaffId = request.user.staffId,
                 labId = request.lab.id,
-                labName = request.lab.name
+                labName = request.lab.name,
+                role = request.user.role.name,
+                dept = request.user.dept,
+                requestId = request.id
             )
         }
     }
 
-    // 특정 userId에 해당하는 유저가 한 모든 요청을 가져오는 함수
     fun getMembershipRequestsByUser(userId: Long): List<LabMembershipRequestDto> {
         val requests = requestRepository.findAllByUser_Id(userId)
         return requests.map { request ->
@@ -75,8 +77,61 @@ class LabService(
                 userName = request.user.name,
                 userStaffId = request.user.staffId,
                 labId = request.lab.id,
-                labName = request.lab.name
+                labName = request.lab.name,
+                role = request.user.role.name,
+                dept = request.user.dept,
+                requestId = request.id
             )
+        }
+    }
+
+    fun getLabMembers(labId: Long): List<UserDto> {
+        val userLabs = userLabRepository.findAllByLabId(labId)
+        return userLabs.map { userLab ->
+            val user = userRepository.findById(userLab.userId).orElseThrow { IllegalArgumentException("User not found") }
+            UserDto(
+                username = user.username,
+                password = "", // Don't expose the password
+                role = user.role.name,
+                labs = listOf(),
+                labNames = listOf(),
+                staffId = user.staffId,
+                name = user.name,
+                dept = user.dept
+            )
+        }
+    }
+
+    fun getLabsByUser(userId: Long): List<LabDto> {
+        val userLabs = userLabRepository.findAllByUserId(userId)
+        return userLabs.map { userLab ->
+            val lab = labRepository.findById(userLab.labId).orElseThrow { IllegalArgumentException("Lab not found") }
+            LabDto(
+                labId = lab.id,
+                labName = lab.name,
+                dept = lab.dept
+            )
+        }
+    }
+
+    fun findLabById(labId: Long): LabDto {
+        val lab = labRepository.findById(labId).orElseThrow { IllegalArgumentException("Lab not found") }
+        return LabDto(
+            labId = lab.id,
+            labName = lab.name,
+            dept = lab.dept
+        )
+    }
+
+    fun removeUserFromLab(userId: Long, labId: Long): Boolean {
+        return try {
+            val userLab = userLabRepository.findByUserIdAndLabId(userId, labId)
+                ?: throw IllegalArgumentException("Membership not found")
+            userLabRepository.delete(userLab)
+            true
+        } catch (e: Exception) {
+            println("Error removing user from lab: ${e.message}")
+            false
         }
     }
 }

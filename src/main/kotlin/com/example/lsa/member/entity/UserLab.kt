@@ -9,10 +9,9 @@ data class UserLab(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,
 
-    @Column(name = "user_id", nullable = false)  // Ensure this matches database column name
+    @Column(name = "user_id", nullable = false)
     var userId: Long,
 
-    @Column(name = "lab_id", nullable = false)  // Ensure this matches database column name
+    @Column(name = "lab_id", nullable = false)
     var labId: Long
 )
-

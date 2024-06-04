@@ -9,9 +9,9 @@ name: Java CI/CD with Gradle
 
 on:
   push:
-    branches: [ "main" ]  # "main" 또는 현재 기본 브랜치명을 사용하세요.
+    branches: [ "master" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "master" ]
 
 jobs:
   build:

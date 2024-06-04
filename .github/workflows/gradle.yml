@@ -16,6 +16,8 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
+    - name: Grant execute permission for Gradle
+      run: chmod +x ./gradlew
     - name: Create application.properties
       run: |
         echo "${{ secrets.APPLICATION_PROPERTIES }}" > src/main/resources/application.properties
@@ -23,6 +25,7 @@ jobs:
       run: echo "EMAIL_FROM_ADDRESS=${{ secrets.EMAIL_FROM_ADDRESS }}" >> $GITHUB_ENV
     - name: Build with Gradle Wrapper
       run: ./gradlew build
+
 
   deploy:
     needs: build

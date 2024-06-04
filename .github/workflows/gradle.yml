@@ -20,6 +20,7 @@ jobs:
       run: chmod +x ./gradlew
     - name: Create application.properties
       run: |
+        mkdir -p src/main/resources
         echo "${{ secrets.APPLICATION_PROPERTIES }}" > src/main/resources/application.properties
     - name: Set Email From Address
       run: echo "EMAIL_FROM_ADDRESS=${{ secrets.EMAIL_FROM_ADDRESS }}" >> $GITHUB_ENV

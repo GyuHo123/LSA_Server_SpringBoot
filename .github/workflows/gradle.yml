@@ -41,7 +41,7 @@ jobs:
       with:
         ssh-private-key: ${{ secrets.SSH_KEY }}
     - name: SCP Transfer
-      run: scp -p ${{sectets.PORT}} POST build/libs/*.jar ${{ secrets.USER }}@${{ secrets.SERVER_IP_ADDRESS }}:/home/ubuntu/LSA_release
+      run: scp -p ${{secrets.PORT}} POST build/libs/*.jar ${{ secrets.USER }}@${{ secrets.SERVER_IP_ADDRESS }}:/home/ubuntu/LSA_release
     - name: Restart server
       run: |
         ssh ${{ secrets.USER }}@${{ secrets.SERVER_IP_ADDRESS }} 'sudo systemctl restart LSAServer.service'

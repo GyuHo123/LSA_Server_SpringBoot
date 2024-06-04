@@ -49,7 +49,7 @@ jobs:
       run: |
         ssh-keyscan -p ${{ secrets.PORT }} ${{ secrets.SERVER_IP_ADDRESS }} >> ~/.ssh/known_hosts
     - name: SCP Transfer
-      run: scp -P ${{secrets.PORT}} POST /home/runner/work/LSA_Server_SpringBoot/LSA_Server_SpringBoot/build/libs/*.jar ${{ secrets.USER }}@${{ secrets.SERVER_IP_ADDRESS }}:/home/ubuntu/LSA_release
+      run: scp -P ${{secrets.PORT}} POST /home/runner/work/LSA_Server_SpringBoot/LSA_Server_SpringBoot/*.jar ${{ secrets.USER }}@${{ secrets.SERVER_IP_ADDRESS }}:/home/ubuntu/LSA_release
     - name: Restart server
       run: |
         ssh ${{ secrets.USER }}@${{ secrets.SERVER_IP_ADDRESS }} 'sudo systemctl restart LSAServer.service'

@@ -54,4 +54,4 @@ jobs:
       run:  scp -P ${{ secrets.PORT }} /home/runner/work/LSA_Server_SpringBoot/LSA_Server_SpringBoot/LSA-0.0.1-SNAPSHOT.jar ${{ secrets.USER }}@${{ secrets.SERVER_IP_ADDRESS }}:/home/ubuntu/LSA_release
     - name: Restart server
       run: |
-        ssh ${{ secrets.USER }}@${{ secrets.SERVER_IP_ADDRESS }} 'sudo systemctl restart LSAServer.service'
+        ssh -p  ${{ secrets.PORT }} ${{ secrets.USER }}@${{ secrets.SERVER_IP_ADDRESS }} 'sudo systemctl restart LSAServer.service'

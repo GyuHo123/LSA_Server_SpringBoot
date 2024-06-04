@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.provisioning.InMemoryUserDetailsManager
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import org.springframework.web.cors.CorsConfiguration
 
 @Configuration
 @EnableWebSecurity
@@ -31,7 +32,18 @@ class SecurityConfig(
                     .anyRequest().permitAll()
             }
             .csrf { csrf -> csrf.disable() }
-            .cors { cors -> cors.disable() }
+            .cors { cors ->
+                cors.configurationSource {
+                    val configuration = CorsConfiguration().apply {
+                        addAllowedOrigin("*")
+                        allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                        allowedHeaders = listOf("*")
+                        allowCredentials = false
+                    }
+                    configuration
+                }
+            }
+
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
         http.addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter::class.java)
         return http.build()

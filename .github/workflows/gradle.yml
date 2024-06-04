@@ -24,7 +24,7 @@ jobs:
     - name: Set Email From Address
       run: echo "EMAIL_FROM_ADDRESS=${{ secrets.EMAIL_FROM_ADDRESS }}" >> $GITHUB_ENV
     - name: Build with Gradle Wrapper
-      run: ./gradlew build
+      run: ./gradlew bootjar
 
 
   deploy:
@@ -41,7 +41,7 @@ jobs:
       with:
         ssh-private-key: ${{ secrets.SSH_KEY }}
     - name: SCP Transfer
-      run: scp build/libs/*.jar ${{ secrets.USER }}@${{ secrets.SERVER_IP_ADDRESS }}:/home/ubuntu/LSA_release
+      run: scp -p ${{sectets.PORT}} POST build/libs/*.jar ${{ secrets.USER }}@${{ secrets.SERVER_IP_ADDRESS }}:/home/ubuntu/LSA_release
     - name: Restart server
       run: |
         ssh ${{ secrets.USER }}@${{ secrets.SERVER_IP_ADDRESS }} 'sudo systemctl restart LSAServer.service'

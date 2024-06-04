@@ -31,6 +31,7 @@ class SecurityConfig(
                     .anyRequest().permitAll()
             }
             .csrf { csrf -> csrf.disable() }
+            .cors { cors -> cors.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
         http.addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter::class.java)
         return http.build()

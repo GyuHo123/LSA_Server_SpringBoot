@@ -25,7 +25,11 @@ jobs:
       run: echo "EMAIL_FROM_ADDRESS=${{ secrets.EMAIL_FROM_ADDRESS }}" >> $GITHUB_ENV
     - name: Build with Gradle Wrapper
       run: ./gradlew bootjar
-
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: build-artifact
+        path: build/libs/*.jar
 
   deploy:
     needs: build

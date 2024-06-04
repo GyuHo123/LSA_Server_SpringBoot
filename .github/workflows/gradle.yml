@@ -45,6 +45,9 @@ jobs:
       uses: webfactory/ssh-agent@v0.5.4
       with:
         ssh-private-key: ${{ secrets.SSH_KEY }}
+    - name: Add server to known_hosts
+      run: |
+        ssh-keyscan -p ${{ secrets.PORT }} ${{ secrets.SERVER_IP_ADDRESS }} >> ~/.ssh/known_hosts
     - name: SCP Transfer
       run: scp -P ${{secrets.PORT}} POST build/libs/*.jar ${{ secrets.USER }}@${{ secrets.SERVER_IP_ADDRESS }}:/home/ubuntu/LSA_release
     - name: Restart server

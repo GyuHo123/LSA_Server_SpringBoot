@@ -2,7 +2,7 @@ package com.example.lsa.member.controller
 
 import com.example.lsa.member.dto.LabDto
 import com.example.lsa.member.dto.LabMembershipRequestDto
-import com.example.lsa.member.dto.UserDto
+import com.example.lsa.member.dto.UserInfoDto
 import com.example.lsa.member.service.LabService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -16,25 +16,23 @@ class LabController(
     @PostMapping("/request-membership")
     fun requestMembership(@RequestParam userId: Long, @RequestParam labId: Long): ResponseEntity<String> {
         labService.requestLabMembership(userId, labId)
-        return ResponseEntity.ok("Membership request sent")
+        return ResponseEntity.ok("멤버쉽 요청 전송")
     }
 
     @PostMapping("/respond-to-request")
     fun respondToRequest(@RequestParam requestId: Long, @RequestParam accept: Boolean): ResponseEntity<String> {
         if (accept) {
             val success = labService.addUserToLab(requestId)
-            if (success) {
-                return ResponseEntity.ok("Membership accepted and user added to lab.")
-            } else {
-                return ResponseEntity.badRequest().body("Error adding user to lab.")
+            if (!success) {
+                return ResponseEntity.badRequest().body("오류 발생 : 멤버를 추가할 수 없습니다")
             }
+            return ResponseEntity.ok("성공적으로 멤버를 추가했습니다")
         } else {
             val success = labService.removeMembershipRequest(requestId)
-            if (success) {
-                return ResponseEntity.ok("Membership request removed.")
-            } else {
-                return ResponseEntity.badRequest().body("Error removing membership request.")
+            if (!success) {
+                return ResponseEntity.badRequest().body("오류가 발생했습니다")
             }
+            return ResponseEntity.ok("성공적으로 요청이 거부되었습니다")
         }
     }
 
@@ -51,7 +49,7 @@ class LabController(
     }
 
     @GetMapping("/{labId}/find-membership")
-    fun getLabMembers(@PathVariable labId: Long): ResponseEntity<List<UserDto>> {
+    fun getLabMembers(@PathVariable labId: Long): ResponseEntity<List<UserInfoDto>> {
         val members = labService.getLabMembers(labId)
         return ResponseEntity.ok(members)
     }
@@ -71,9 +69,9 @@ class LabController(
     @PostMapping("/remove-membership")
     fun removeMembership(@RequestParam userId: Long, @RequestParam labId: Long): ResponseEntity<String> {
         return if (labService.removeUserFromLab(userId, labId)) {
-            ResponseEntity.ok("User removed from lab successfully")
+            ResponseEntity.ok("성공적으로 삭제했습니다")
         } else {
-            ResponseEntity.badRequest().body("Error removing user from lab")
+            ResponseEntity.badRequest().body("오류가 발생했습니다.")
         }
     }
 }

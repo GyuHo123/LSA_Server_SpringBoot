@@ -69,7 +69,7 @@ class UserService(
             try {
                 return userRepository.save(user)
             } catch (e: DataIntegrityViolationException) {
-                throw IllegalStateException("Duplicate username or other integrity issues", e)
+                throw IllegalStateException("오류가 발생했습니다", e)
             }
         } catch (e: Exception) {
             throw e
@@ -88,7 +88,7 @@ class UserService(
 
     fun getUserByStaffId(staffId: String): User? {
         return userRepository.findByStaffId(staffId)
-            ?: throw IllegalStateException("No user found with staffId: $staffId")
+            ?: throw IllegalStateException("해당 학번(사번)의 유저를 찾을 수 없습니다.: $staffId")
     }
 
     fun getUserDetails(username: String): User {
@@ -96,7 +96,7 @@ class UserService(
     }
 
     fun getUserInfo(userId: Long): UserInfoDto {
-        val user = userRepository.findById(userId).orElseThrow { IllegalArgumentException("User not found") }
+        val user = userRepository.findById(userId).orElseThrow { IllegalArgumentException("유저를 찾을 수 없습니다") }
         return UserInfoDto(
             name = user.name,
             role = user.role.name,

@@ -2,20 +2,25 @@ package com.example.lsa.common.auth
 
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
-import io.jsonwebtoken.SignatureAlgorithm
+import io.jsonwebtoken.security.Keys
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Component
 import java.util.*
+import javax.crypto.SecretKey
 
 @Component
 class JwtTokenUtil {
 
     @Value("\${jwt.secret}")
-    private lateinit var secretKey: String
+    private lateinit var secretKeyString: String
 
     @Value("\${jwt.expiration}")
     private val expirationTime: Long = 3600  // 토큰 유효 시간 (예: 3600초)
+
+    private val secretKey: SecretKey by lazy {
+        Keys.hmacShaKeyFor(secretKeyString.toByteArray())
+    }
 
     fun generateToken(userDetails: UserDetails): String {
         val claims = Jwts.claims().setSubject(userDetails.username)
@@ -28,7 +33,7 @@ class JwtTokenUtil {
             .setClaims(claims)
             .setIssuedAt(Date(nowMillis))
             .setExpiration(Date(expirationMillis))
-            .signWith(SignatureAlgorithm.HS512, secretKey)
+            .signWith(secretKey)
             .compact()
     }
 
@@ -42,8 +47,9 @@ class JwtTokenUtil {
     }
 
     private fun getAllClaimsFromToken(token: String): Claims {
-        return Jwts.parser()
+        return Jwts.parserBuilder()
             .setSigningKey(secretKey)
+            .build()
             .parseClaimsJws(token)
             .body
     }

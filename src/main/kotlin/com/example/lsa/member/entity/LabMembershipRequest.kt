@@ -1,7 +1,6 @@
 package com.example.lsa.member.entity
 
 import jakarta.persistence.*
-import java.io.Serializable
 
 @Entity
 @Table(name = "lab_membership_requests")

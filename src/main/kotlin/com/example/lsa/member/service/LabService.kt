@@ -2,7 +2,7 @@ package com.example.lsa.member.service
 
 import com.example.lsa.member.dto.LabDto
 import com.example.lsa.member.dto.LabMembershipRequestDto
-import com.example.lsa.member.dto.UserDto
+import com.example.lsa.member.dto.UserInfoDto
 import com.example.lsa.member.entity.*
 import com.example.lsa.member.repo.*
 import org.springframework.stereotype.Service
@@ -18,27 +18,27 @@ class LabService(
 
     @Transactional
     fun requestLabMembership(userId: Long, labId: Long) {
-        val user = userRepository.findById(userId).orElseThrow { IllegalArgumentException("User not found") }
-        val lab = labRepository.findById(labId).orElseThrow { IllegalArgumentException("Lab not found") }
+        val user = userRepository.findById(userId).orElseThrow { IllegalArgumentException("사용자를 찾을 수 없습니다") }
+        val lab = labRepository.findById(labId).orElseThrow { IllegalArgumentException("연구실을 찾을 수 없습니다.") }
 
         if (user.role == Role.STUDENT) {
             val request = LabMembershipRequest(user = user, lab = lab)
             requestRepository.save(request)
         } else {
-            throw IllegalStateException("Only students can request lab membership")
+            throw IllegalStateException("학생만 요청 가능합니다.")
         }
     }
 
     @Transactional
     fun addUserToLab(requestId: Long): Boolean {
         return try {
-            val request = requestRepository.findById(requestId).orElseThrow { IllegalArgumentException("Request not found") }
+            val request = requestRepository.findById(requestId).orElseThrow { IllegalArgumentException("요청을 찾을 수 없습니다") }
             val newUserLab = UserLab(userId = request.user.id, labId = request.lab.id)
             userLabRepository.save(newUserLab)
             requestRepository.delete(request)
             true
         } catch (e: Exception) {
-            println("Error adding user to lab: ${e.message}")
+            println("오류 발생 : ${e.message}")
             false
         }
     }
@@ -50,7 +50,7 @@ class LabService(
             requestRepository.delete(request)
             true
         } catch (e: Exception) {
-            println("Error removing membership request: ${e.message}")
+            println("오류 발생 : ${e.message}")
             false
         }
     }
@@ -85,18 +85,14 @@ class LabService(
         }
     }
 
-    fun getLabMembers(labId: Long): List<UserDto> {
+    fun getLabMembers(labId: Long): List<UserInfoDto> {
         val userLabs = userLabRepository.findAllByLabId(labId)
         return userLabs.map { userLab ->
-            val user = userRepository.findById(userLab.userId).orElseThrow { IllegalArgumentException("User not found") }
-            UserDto(
-                username = user.username,
-                password = "", // Don't expose the password
-                role = user.role.name,
-                labs = listOf(),
-                labNames = listOf(),
-                staffId = user.staffId,
+            val user = userRepository.findById(userLab.userId).orElseThrow { IllegalArgumentException("사용자 정보가 없습니다") }
+            UserInfoDto(
                 name = user.name,
+                role = user.role.name,
+                staffId = user.staffId,
                 dept = user.dept
             )
         }
@@ -105,7 +101,7 @@ class LabService(
     fun getLabsByUser(userId: Long): List<LabDto> {
         val userLabs = userLabRepository.findAllByUserId(userId)
         return userLabs.map { userLab ->
-            val lab = labRepository.findById(userLab.labId).orElseThrow { IllegalArgumentException("Lab not found") }
+            val lab = labRepository.findById(userLab.labId).orElseThrow { IllegalArgumentException("연구실 정보가 없습니다") }
             LabDto(
                 labId = lab.id,
                 labName = lab.name,
@@ -115,7 +111,7 @@ class LabService(
     }
 
     fun findLabById(labId: Long): LabDto {
-        val lab = labRepository.findById(labId).orElseThrow { IllegalArgumentException("Lab not found") }
+        val lab = labRepository.findById(labId).orElseThrow { IllegalArgumentException("연구실 정보가 없습니다") }
         return LabDto(
             labId = lab.id,
             labName = lab.name,
@@ -126,11 +122,11 @@ class LabService(
     fun removeUserFromLab(userId: Long, labId: Long): Boolean {
         return try {
             val userLab = userLabRepository.findByUserIdAndLabId(userId, labId)
-                ?: throw IllegalArgumentException("Membership not found")
+                ?: throw IllegalArgumentException("유저가 연구실에 없습니다")
             userLabRepository.delete(userLab)
             true
         } catch (e: Exception) {
-            println("Error removing user from lab: ${e.message}")
+            println("오류 발생 : ${e.message}")
             false
         }
     }

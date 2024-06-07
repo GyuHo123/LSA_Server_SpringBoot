@@ -31,7 +31,7 @@ class UserController(
     @PostMapping("/verify")
     fun verifyCode(@RequestBody verifyDto: VerifyDto): ResponseEntity<Any> {
         return try {
-            val user = userService.completeRegistration(verifyDto.userDto, verifyDto.code)
+            userService.completeRegistration(verifyDto.userDto, verifyDto.code)
             ResponseEntity.ok("회원가입 완료")
         } catch (e: Exception) {
             ResponseEntity.badRequest().body(e.message)
@@ -42,7 +42,7 @@ class UserController(
     fun loginUser(@RequestBody loginDto: LoginDto): ResponseEntity<Any> {
         return try {
             val user = userDetailsService.loadUserByUsername(loginDto.username)
-            if (user != null && passwordEncoder.matches(loginDto.password, user.password)) {
+            if (passwordEncoder.matches(loginDto.password, user.password)) {
                 val token = jwtTokenUtil.generateToken(user)
                 ResponseEntity.ok(mapOf("user" to user.username, "token" to token))
             } else {

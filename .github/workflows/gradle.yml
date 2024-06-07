@@ -47,9 +47,7 @@ jobs:
         ssh-private-key: ${{ secrets.SSH_KEY }}
     - name: Add server to known_hosts
       run: |
-        ssh-keyscan -p ${{ secrets.PORT }} ${{ secrets.SERVER_IP_ADDRESS }} >> ~/.ssh/known_hosts
-    - name: List downloaded files
-      run: ls -l /home/runner/work/LSA_Server_SpringBoot/LSA_Server_SpringBoot    
+        ssh-keyscan -p ${{ secrets.PORT }} ${{ secrets.SERVER_IP_ADDRESS }} >> ~/.ssh/known_hosts  
     - name: SCP Transfer
       run:  scp -P ${{ secrets.PORT }} /home/runner/work/LSA_Server_SpringBoot/LSA_Server_SpringBoot/LSA-0.0.1-SNAPSHOT.jar ${{ secrets.USER }}@${{ secrets.SERVER_IP_ADDRESS }}:/home/ubuntu/LSA_release
     - name: Restart server

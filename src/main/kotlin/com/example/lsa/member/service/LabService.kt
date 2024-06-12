@@ -65,7 +65,7 @@ class LabService(
                 labName = request.lab.name,
                 role = request.user.role.name,
                 dept = request.user.dept,
-                labdept = request.lab.dept,
+                labDept = request.lab.dept,
                 requestId = request.id
             )
         }
@@ -81,7 +81,7 @@ class LabService(
                 labName = request.lab.name,
                 role = request.user.role.name,
                 dept = request.user.dept,
-                labdept = request.lab.dept,
+                labDept = request.lab.dept,
                 requestId = request.id
             )
         }

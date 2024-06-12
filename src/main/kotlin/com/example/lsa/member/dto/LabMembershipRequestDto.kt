@@ -7,5 +7,6 @@ data class LabMembershipRequestDto(
     val labName: String,
     val role: String,
     val dept: String,
+    val labdept: String,
     val requestId: Long
 )

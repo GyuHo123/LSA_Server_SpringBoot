@@ -60,11 +60,12 @@ class LabService(
         return requests.map { request ->
             LabMembershipRequestDto(
                 userName = request.user.name,
-                userStaffId = request.user.staffId,
+                staffId = request.user.staffId,
                 labId = request.lab.id,
                 labName = request.lab.name,
                 role = request.user.role.name,
                 dept = request.user.dept,
+                labdept = request.lab.dept,
                 requestId = request.id
             )
         }
@@ -75,11 +76,12 @@ class LabService(
         return requests.map { request ->
             LabMembershipRequestDto(
                 userName = request.user.name,
-                userStaffId = request.user.staffId,
+                staffId = request.user.staffId,
                 labId = request.lab.id,
                 labName = request.lab.name,
                 role = request.user.role.name,
                 dept = request.user.dept,
+                labdept = request.lab.dept,
                 requestId = request.id
             )
         }
@@ -90,6 +92,7 @@ class LabService(
         return userLabs.map { userLab ->
             val user = userRepository.findById(userLab.userId).orElseThrow { IllegalArgumentException("사용자 정보가 없습니다") }
             UserInfoDto(
+                userId = user.id,
                 name = user.name,
                 role = user.role.name,
                 staffId = user.staffId,

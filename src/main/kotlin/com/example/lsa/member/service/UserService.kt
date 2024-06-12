@@ -8,7 +8,6 @@ import com.example.lsa.member.entity.*
 import com.example.lsa.member.repo.UserRepository
 import com.example.lsa.member.repo.LabRepository
 import com.example.lsa.member.repo.StaffRepository
-import org.slf4j.LoggerFactory
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -98,6 +97,7 @@ class UserService(
     fun getUserInfo(userId: Long): UserInfoDto {
         val user = userRepository.findById(userId).orElseThrow { IllegalArgumentException("유저를 찾을 수 없습니다") }
         return UserInfoDto(
+            userId = user.id,
             name = user.name,
             role = user.role.name,
             dept = user.dept,

@@ -2,7 +2,7 @@ package com.example.lsa.member.dto
 
 data class LabMembershipRequestDto(
     val userName: String,
-    val userStaffId: String,
+    val staffId: String,
     val labId: Long,
     val labName: String,
     val role: String,

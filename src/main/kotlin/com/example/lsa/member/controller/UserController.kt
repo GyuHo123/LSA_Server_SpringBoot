@@ -3,6 +3,7 @@ package com.example.lsa.member.controller
 import com.example.lsa.member.dto.*
 import com.example.lsa.member.service.UserService
 import com.example.lsa.common.auth.JwtTokenUtil
+import com.example.lsa.member.service.CustomUserDetails
 import com.example.lsa.member.service.CustomUserDetailsService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -41,10 +42,10 @@ class UserController(
     @PostMapping("/login")
     fun loginUser(@RequestBody loginDto: LoginDto): ResponseEntity<Any> {
         return try {
-            val user = userDetailsService.loadUserByUsername(loginDto.username)
+            val user = userDetailsService.loadUserByUsername(loginDto.username) as CustomUserDetails
             if (passwordEncoder.matches(loginDto.password, user.password)) {
                 val token = jwtTokenUtil.generateToken(user)
-                ResponseEntity.ok(mapOf("user" to user.username, "token" to token))
+                ResponseEntity.ok(mapOf("userId" to user.id, "token" to token))
             } else {
                 ResponseEntity.badRequest().body("올바르지 않은 비밀번호")
             }

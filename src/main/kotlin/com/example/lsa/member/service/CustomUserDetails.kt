@@ -6,6 +6,9 @@ import org.springframework.security.core.userdetails.UserDetails
 import com.example.lsa.member.entity.User
 
 class CustomUserDetails(private val user: User): UserDetails {
+    val id: Long
+        get() = user.id
+
     override fun getAuthorities(): Collection<GrantedAuthority> {
         return listOf(SimpleGrantedAuthority("ROLE_${user.role}"))
     }

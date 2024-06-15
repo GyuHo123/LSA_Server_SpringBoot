@@ -44,7 +44,7 @@ class ResearchController(
         return ResponseEntity.ok("연구 이름 수정 완료")
     }
 
-    @PostMapping("/{labId}/delete-research")
+    @DeleteMapping("/{labId}/delete-research")
     fun deleteResearch(@PathVariable labId: Long, @RequestParam researchId: Long): ResponseEntity<String> {
         researchService.deleteResearch(researchId)
         return ResponseEntity.ok("연구 삭제 완료")
@@ -72,7 +72,7 @@ class ResearchController(
         return ResponseEntity.ok("매뉴얼 수정 완료")
     }
 
-    @PostMapping("/manual/delete-manual")
+    @DeleteMapping("/manual/delete-manual")
     fun deleteManual(@RequestParam manualId: Long): ResponseEntity<String> {
         manualService.deleteManual(manualId)
         return ResponseEntity.ok("매뉴얼 삭제 완료")
@@ -102,7 +102,7 @@ class ResearchController(
         return ResponseEntity.ok("가상 객체 수정 완료")
     }
 
-    @PostMapping("/vobject/delete-virtual-object")
+    @DeleteMapping("/vobject/delete-virtual-object")
     fun deleteVirtualObject(@RequestParam virtualObjectId: Long): ResponseEntity<String> {
         virtualObjectService.deleteVirtualObject(virtualObjectId)
         return ResponseEntity.ok("가상 객체 삭제 완료")

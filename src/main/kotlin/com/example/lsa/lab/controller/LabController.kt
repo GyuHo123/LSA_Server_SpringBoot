@@ -66,7 +66,7 @@ class LabController(
         return ResponseEntity.ok(lab)
     }
 
-    @PostMapping("/remove-membership")
+    @DeleteMapping("/remove-membership")
     fun removeMembership(@RequestParam userId: Long, @RequestParam labId: Long): ResponseEntity<String> {
         return if (labService.removeUserFromLab(userId, labId)) {
             ResponseEntity.ok("성공적으로 삭제했습니다")

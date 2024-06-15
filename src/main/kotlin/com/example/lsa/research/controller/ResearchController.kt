@@ -62,13 +62,13 @@ class ResearchController(
 
     @PostMapping("/manual/{labId}/create-manual")
     fun createManual(@PathVariable labId: Long, @RequestParam researchId: Long, @RequestBody manualCreateDto: ManualCreateDto): ResponseEntity<Map<String, Long>> {
-        val manual = manualService.createManual(researchId, manualCreateDto.name)
+        val manual = manualService.createManual(researchId, manualCreateDto.manualName)
         return ResponseEntity.ok(mapOf("manualId" to manual.manualId))
     }
 
     @PostMapping("/manual/edit-manual")
     fun editManual(@RequestParam manualId: Long, @RequestBody manualCreateDto: ManualCreateDto): ResponseEntity<String> {
-        manualService.editManual(manualId, manualCreateDto.name)
+        manualService.editManual(manualId, manualCreateDto.manualName)
         return ResponseEntity.ok("매뉴얼 수정 완료")
     }
 

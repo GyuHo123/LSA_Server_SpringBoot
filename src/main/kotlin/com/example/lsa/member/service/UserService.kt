@@ -1,12 +1,13 @@
 package com.example.lsa.member.service
 
 import com.example.lsa.common.service.EmailService
+import com.example.lsa.lab.entity.Lab
 import com.example.lsa.member.dto.UserDto
 import com.example.lsa.member.dto.UserInfoDto
 import com.example.lsa.member.entity.User
 import com.example.lsa.member.entity.*
 import com.example.lsa.member.repo.UserRepository
-import com.example.lsa.member.repo.LabRepository
+import com.example.lsa.lab.repo.LabRepository
 import com.example.lsa.member.repo.StaffRepository
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service

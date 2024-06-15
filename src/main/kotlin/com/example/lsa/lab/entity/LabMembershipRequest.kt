@@ -1,5 +1,6 @@
-package com.example.lsa.member.entity
+package com.example.lsa.lab.entity
 
+import com.example.lsa.member.entity.User
 import jakarta.persistence.*
 
 @Entity

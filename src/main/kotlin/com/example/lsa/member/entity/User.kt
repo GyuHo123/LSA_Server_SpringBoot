@@ -1,5 +1,6 @@
 package com.example.lsa.member.entity
 
+import com.example.lsa.lab.entity.Lab
 import jakarta.persistence.*
 import jakarta.validation.constraints.NotBlank
 

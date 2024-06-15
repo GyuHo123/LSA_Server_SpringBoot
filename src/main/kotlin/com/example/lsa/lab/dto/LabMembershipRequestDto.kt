@@ -1,4 +1,4 @@
-package com.example.lsa.member.dto
+package com.example.lsa.lab.dto
 
 data class LabMembershipRequestDto(
     val userName: String,

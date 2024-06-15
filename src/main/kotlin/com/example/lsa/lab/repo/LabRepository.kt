@@ -1,8 +1,8 @@
-package com.example.lsa.member.repo
+package com.example.lsa.lab.repo
 
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
-import com.example.lsa.member.entity.Lab
+import com.example.lsa.lab.entity.Lab
 
 
 @Repository

@@ -1,9 +1,9 @@
-package com.example.lsa.member.controller
+package com.example.lsa.lab.controller
 
-import com.example.lsa.member.dto.LabDto
-import com.example.lsa.member.dto.LabMembershipRequestDto
+import com.example.lsa.lab.dto.LabDto
+import com.example.lsa.lab.dto.LabMembershipRequestDto
 import com.example.lsa.member.dto.UserInfoDto
-import com.example.lsa.member.service.LabService
+import com.example.lsa.lab.service.LabService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 

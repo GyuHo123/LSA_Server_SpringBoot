@@ -1,7 +1,10 @@
-package com.example.lsa.member.service
+package com.example.lsa.lab.service
 
-import com.example.lsa.member.dto.LabDto
-import com.example.lsa.member.dto.LabMembershipRequestDto
+import com.example.lsa.lab.entity.LabMembershipRequest
+import com.example.lsa.lab.repo.LabMembershipRequestRepository
+import com.example.lsa.lab.repo.LabRepository
+import com.example.lsa.lab.dto.LabDto
+import com.example.lsa.lab.dto.LabMembershipRequestDto
 import com.example.lsa.member.dto.UserInfoDto
 import com.example.lsa.member.entity.*
 import com.example.lsa.member.repo.*

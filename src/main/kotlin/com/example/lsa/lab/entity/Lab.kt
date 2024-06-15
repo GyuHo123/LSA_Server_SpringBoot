@@ -1,4 +1,4 @@
-package com.example.lsa.member.entity
+package com.example.lsa.lab.entity
 
 import jakarta.persistence.*
 

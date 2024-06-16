@@ -36,7 +36,7 @@ class SecurityConfig(
             .cors { cors ->
                 cors.configurationSource {
                     val configuration = CorsConfiguration().apply {
-                        addAllowedOrigin("https://kgyuho.dev")
+                        addAllowedOrigin("https://study.kgyuho.dev")
                         allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         allowedHeaders = listOf("*")
                         allowCredentials = true

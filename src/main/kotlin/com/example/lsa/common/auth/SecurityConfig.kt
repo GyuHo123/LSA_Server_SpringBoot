@@ -36,10 +36,10 @@ class SecurityConfig(
             .cors { cors ->
                 cors.configurationSource {
                     val configuration = CorsConfiguration().apply {
-                        allowedOriginPatterns = listOf("*")
+                        allowedOriginPatterns = listOf("https://*.com", "https://*.kr", "https://*.dev")
                         allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         allowedHeaders = listOf("*")
-                        allowCredentials = false
+                        allowCredentials = true
                     }
                     configuration
                 }

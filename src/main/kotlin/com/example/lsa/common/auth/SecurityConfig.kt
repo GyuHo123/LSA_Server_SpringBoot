@@ -39,7 +39,7 @@ class SecurityConfig(
                         addAllowedOrigin("*")
                         allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         allowedHeaders = listOf("*")
-                        allowCredentials = false
+                        allowCredentials = true
                     }
                     configuration
                 }

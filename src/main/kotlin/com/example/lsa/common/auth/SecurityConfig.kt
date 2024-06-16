@@ -33,18 +33,7 @@ class SecurityConfig(
                     .anyRequest().authenticated()
             }
             .csrf { csrf -> csrf.disable() }
-            .cors { cors ->
-                cors.configurationSource {
-                    val configuration = CorsConfiguration().apply {
-                        allowedOriginPatterns = listOf("https://*.com", "https://*.kr", "https://*.dev")
-                        allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                        allowedHeaders = listOf("*")
-                        allowCredentials = true
-                    }
-                    configuration
-                }
-            }
-
+            .cors { cors -> cors.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
         http.addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter::class.java)
         return http.build()

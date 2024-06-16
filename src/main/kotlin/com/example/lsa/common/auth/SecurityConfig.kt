@@ -27,9 +27,10 @@ class SecurityConfig(
         http
             .authorizeHttpRequests { auth ->
                 auth
+                    .requestMatchers("/api/users/register", "/api/users/login", "/api/users/verify").permitAll()
                     .requestMatchers("api/labs/respond-to-request").hasRole("RESEARCHER")
                     .requestMatchers("api/labs/request-membership").hasRole("STUDENT")
-                    .anyRequest().permitAll()
+                    .anyRequest().authenticated()
             }
             .csrf { csrf -> csrf.disable() }
             .cors { cors ->

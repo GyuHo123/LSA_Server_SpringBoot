@@ -4,6 +4,7 @@ import com.example.lsa.lab.dto.LabDto
 import com.example.lsa.lab.dto.LabMembershipRequestDto
 import com.example.lsa.member.dto.UserInfoDto
 import com.example.lsa.lab.service.LabService
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -15,8 +16,12 @@ class LabController(
 
     @PostMapping("/request-membership")
     fun requestMembership(@RequestParam userId: Long, @RequestParam labId: Long): ResponseEntity<String> {
-        labService.requestLabMembership(userId, labId)
-        return ResponseEntity.ok("멤버쉽 요청 전송")
+        return try {
+            labService.requestLabMembership(userId, labId)
+            ResponseEntity.ok("멤버쉽 요청이 성공적으로 처리되었습니다.")
+        }catch(e: IllegalStateException){
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.message)
+        }
     }
 
     @PostMapping("/respond-to-request")

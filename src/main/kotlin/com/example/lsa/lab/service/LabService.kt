@@ -24,11 +24,19 @@ class LabService(
         val user = userRepository.findById(userId).orElseThrow { IllegalArgumentException("사용자를 찾을 수 없습니다") }
         val lab = labRepository.findById(labId).orElseThrow { IllegalArgumentException("연구실을 찾을 수 없습니다.") }
 
-        if (user.role == Role.STUDENT) {
+        val existingUserLab = userLabRepository.findByUserIdAndLabId(userId, labId)
+
+        if(existingUserLab != null){
+            throw IllegalStateException("이미 가입 중인 연구실입니다.")
+        }
+
+        val existingRequest = requestRepository.findByUserIdAndLabId(userId, labId)
+
+        if (existingRequest == null) {
             val request = LabMembershipRequest(user = user, lab = lab)
             requestRepository.save(request)
         } else {
-            throw IllegalStateException("학생만 요청 가능합니다.")
+            throw IllegalStateException("이미 가입 요청이 있습니다: 사용자 ID = ${user.id}, 연구실 ID = ${lab.id}")
         }
     }
 

@@ -19,7 +19,7 @@ class LabController(
         return try {
             labService.requestLabMembership(userId, labId)
             ResponseEntity.ok("멤버쉽 요청이 성공적으로 처리되었습니다.")
-        }catch(e: IllegalStateException){
+        } catch(e: IllegalStateException){
             ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.message)
         }
     }

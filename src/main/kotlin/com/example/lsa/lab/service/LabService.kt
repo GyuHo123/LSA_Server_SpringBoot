@@ -70,6 +70,7 @@ class LabService(
         val requests = requestRepository.findAllByLab_Id(labId)
         return requests.map { request ->
             LabMembershipRequestDto(
+                userId = request.user.id,
                 userName = request.user.name,
                 staffId = request.user.staffId,
                 labId = request.lab.id,
@@ -86,6 +87,7 @@ class LabService(
         val requests = requestRepository.findAllByUser_Id(userId)
         return requests.map { request ->
             LabMembershipRequestDto(
+                userId = request.user.id,
                 userName = request.user.name,
                 staffId = request.user.staffId,
                 labId = request.lab.id,

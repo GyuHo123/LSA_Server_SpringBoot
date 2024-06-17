@@ -1,6 +1,7 @@
 package com.example.lsa.lab.dto
 
 data class LabMembershipRequestDto(
+    val userId: Long?,
     val userName: String,
     val staffId: String,
     val labId: Long,

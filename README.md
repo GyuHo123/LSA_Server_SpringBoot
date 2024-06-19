@@ -13,3 +13,9 @@
 
 ### 3. 2024 1학기 전북대학교 LINC 3.0 캡스톤 경진대회 수상
 https://linc.jbnu.ac.kr/history/?cp_code=r8UZ3E9AruF65ea7000&club_code=WuApNcvleO9660d1c9a&stx=&s_group=
+
+### Front(WebView)
+URL : https://tawkor.xyz / Repo : https://github.com/ijun17/LSA-web
+
+### Client
+Repo : https://github.com/garbi23/LAS-CLIENT

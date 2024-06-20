@@ -12,10 +12,16 @@
 ![image](https://github.com/GyuHo123/LSA_Server_SpringBoot/assets/74482513/504b6834-0620-4ef9-987d-c2838d8ffd3e)
 
 ### 3. 2024 1학기 전북대학교 LINC 3.0 캡스톤 경진대회 은상
-발표 영상 : <iframe width="560" height="315" src="https://www.youtube.com/embed/Nzvht-6yD8w" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+발표 영상
+
+
+[![Watch the video](https://img.youtube.com/vi/Nzvht-6yD8w/0.jpg)](https://www.youtube.com/watch?v=Nzvht-6yD8w)
+
 
 ### Front(WebView)
-URL : https://tawkor.xyz / Repo : https://github.com/ijun17/LSA-web
+[![Website Preview](https://image.thum.io/get/https://tawkor.xyz/LSA)](https://tawkor.xyz/LSA)  
+Repo : https://github.com/ijun17/LSA-web
 
 ### Client
 Repo : https://github.com/garbi23/LAS-CLIENT

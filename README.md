@@ -11,8 +11,8 @@
 ### 2. 2024 한국정보기술학회 대학생논문경진대회 금상
 ![image](https://github.com/GyuHo123/LSA_Server_SpringBoot/assets/74482513/504b6834-0620-4ef9-987d-c2838d8ffd3e)
 
-### 3. 2024 1학기 전북대학교 LINC 3.0 캡스톤 경진대회 수상
-https://linc.jbnu.ac.kr/history/?cp_code=r8UZ3E9AruF65ea7000&club_code=WuApNcvleO9660d1c9a&stx=&s_group=
+### 3. 2024 1학기 전북대학교 LINC 3.0 캡스톤 경진대회 은상
+발표 영상 : [https://linc.jbnu.ac.kr/history/?cp_code=r8UZ3E9AruF65ea7000&club_code=WuApNcvleO9660d1c9a&stx=&s_group=](https://www.youtube.com/watch?v=Nzvht-6yD8w)
 
 ### Front(WebView)
 URL : https://tawkor.xyz / Repo : https://github.com/ijun17/LSA-web

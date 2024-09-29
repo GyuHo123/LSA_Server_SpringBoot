@@ -1,5 +1,6 @@
 package com.example.lsa.portal.entity
 
+import com.example.lsa.portal.dto.SharedManualDTO
 import com.example.lsa.research.entity.Manual
 import jakarta.persistence.*
 
@@ -17,3 +18,11 @@ data class SharedManual(
     @Column(name = "downloads", nullable = false)
     val downloads: Long,
 )
+
+fun SharedManual.toDTO(): SharedManualDTO {
+    return SharedManualDTO(
+            manualId = this.id,
+            name = this.name,
+            downloads = this.downloads
+    )
+}

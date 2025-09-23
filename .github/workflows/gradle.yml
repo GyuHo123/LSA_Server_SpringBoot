@@ -58,7 +58,7 @@ jobs:
           path: |
             **/build/libs/*.jar
             build.log
-          if-no-files-found: error   # JAR 없으면 여기서 실패하게
+          if-no-files-found: error   # JAR 없으면 즉시 실패
 
       # 실패 시 Rooty로 보고
       - name: Install jq (for reporter)
@@ -73,7 +73,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          # build.log이 혹시 비어있다면 기본 메시지 주입
+          # build.log 비어있으면 기본 메시지라도 넣기
           if [[ ! -s build.log ]]; then
             echo "[reporter] Build failed but no logs captured." > build.log
           fi
@@ -91,7 +91,7 @@ jobs:
           git diff --no-color --unified=0 "$BASE...$HEAD" > ci.diff || true
           touch ci.diff
 
-          ERROR_LOGS_JSON="$(tail -n 400 build.log | jq -R -s 'split(\"\\n\") | map(select(length>0)) | .[-400:]')"
+          ERROR_LOGS_JSON="$(tail -n 400 build.log | jq -Rcs 'split("\n") | map(select(length>0)) | .[-400:]')"
           TIMESTAMP="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 
           payload=$(jq -n \
@@ -156,6 +156,7 @@ jobs:
         run: sudo apt-get update |& tee -a deploy.log && sudo apt-get install -y jq |& tee -a deploy.log
 
       - name: SCP Transfer (capture log)
+        timeout-minutes: 1
         env:
           PORT: ${{ secrets.PORT }}
           USER: ${{ secrets.USER }}
@@ -165,6 +166,7 @@ jobs:
           scp -P "$PORT" "${{ steps.pick.outputs.jar }}" "$USER@$SERVER:/home/ubuntu/LSA_release" |& tee -a deploy.log
 
       - name: Restart server (append log)
+        timeout-minutes: 1
         env:
           PORT: ${{ secrets.PORT }}
           USER: ${{ secrets.USER }}
@@ -182,7 +184,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          # deploy.log이 비어있으면 기본 메시지라도 넣기
+          # deploy.log 비어있으면 기본 메시지라도 넣기
           if [[ ! -s deploy.log ]]; then
             echo "[reporter] Deploy failed but no logs captured." > deploy.log
           fi
@@ -200,7 +202,7 @@ jobs:
           git diff --no-color --unified=0 "$BASE...$HEAD" > ci.diff || true
           touch ci.diff
 
-          ERROR_LOGS_JSON="$(tail -n 400 deploy.log | jq -R -s 'split(\"\\n\") | map(select(length>0)) | .[-400:]')"
+          ERROR_LOGS_JSON="$(tail -n 400 deploy.log | jq -Rcs 'split("\n") | map(select(length>0)) | .[-400:]')"
           TIMESTAMP="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 
           payload=$(jq -n \
@@ -213,7 +215,6 @@ jobs:
             --argjson errorLogs "$ERROR_LOGS_JSON" \
             '{workflowName:$workflowName, jobName:$jobName, errorLogs:$errorLogs, gitDiff:$diff, repository:$repository, commitSha:$commitSha, timestamp:$timestamp}')
 
-          CURL_HEADERS (-H "Content-Type: application/json")
           CURL_HEADERS=(-H "Content-Type: application/json")
           [[ -n "${REPORT_TOKEN:-}" ]] && CURL_HEADERS+=(-H "Authorization: Bearer $REPORT_TOKEN")
           curl -sS -X POST "$REPORT_URL" "${CURL_HEADERS[@]}" -d "$payload" | cat

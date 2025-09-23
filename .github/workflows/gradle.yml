@@ -13,10 +13,14 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           submodules: recursive
+
+      - name: Init build log
+        run: echo "=== Build job start $(date -u) ===" > build.log
 
       - name: Set up Temurin JDK 21
         uses: actions/setup-java@v4
@@ -25,27 +29,39 @@ jobs:
           java-version: '21'
           cache: 'gradle'
 
-      - name: Ensure Gradle wrapper is executable
+      - name: Ensure Gradle wrapper
         run: |
-          test -f gradlew || { echo "gradlew missing. Add Gradle wrapper to repo."; exit 1; }
-          chmod +x gradlew
-          ./gradlew --version
+          set -euo pipefail
+          {
+            test -f gradlew || { echo "[build] ERROR: gradlew missing in repo"; exit 1; }
+            chmod +x gradlew
+            ./gradlew --version
+          } |& tee -a build.log
 
-      - name: Build (capture log)
+      - name: Build (bootJar)
         run: |
           set -o pipefail
-          ./gradlew --no-daemon bootJar 2>&1 | tee build.log
+          ./gradlew --no-daemon bootJar |& tee -a build.log
+
+      - name: List JARs to upload
+        run: |
+          set -o pipefail
+          {
+            echo "[build] Listing candidate JARs under **/build/libs/"
+            find . -path '*/build/libs/*.jar' -type f -print
+          } |& tee -a build.log
 
       - name: Upload build artifacts
-        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: app-jar
           path: |
             **/build/libs/*.jar
             build.log
+          if-no-files-found: error   # JAR 없으면 여기서 실패하게
 
-      - name: Install jq (for failure reporter)
+      # 실패 시 Rooty로 보고
+      - name: Install jq (for reporter)
         if: failure()
         run: sudo apt-get update && sudo apt-get install -y jq
 
@@ -56,6 +72,11 @@ jobs:
           REPORT_TOKEN: ${{ secrets.CI_REPORT_TOKEN }}
         run: |
           set -euo pipefail
+
+          # build.log이 혹시 비어있다면 기본 메시지 주입
+          if [[ ! -s build.log ]]; then
+            echo "[reporter] Build failed but no logs captured." > build.log
+          fi
 
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             BASE="${{ github.event.pull_request.base.sha }}"
@@ -68,9 +89,9 @@ jobs:
           [[ -n "${HEAD:-}" ]] || HEAD="$(git rev-parse HEAD)"
 
           git diff --no-color --unified=0 "$BASE...$HEAD" > ci.diff || true
-          touch build.log ci.diff
+          touch ci.diff
 
-          ERROR_LOGS_JSON="$(tail -n 400 build.log | jq -R -s 'split("\n") | map(select(length>0)) | .[-400:]')"
+          ERROR_LOGS_JSON="$(tail -n 400 build.log | jq -R -s 'split(\"\\n\") | map(select(length>0)) | .[-400:]')"
           TIMESTAMP="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 
           payload=$(jq -n \
@@ -83,21 +104,21 @@ jobs:
             --argjson errorLogs "$ERROR_LOGS_JSON" \
             '{workflowName:$workflowName, jobName:$jobName, errorLogs:$errorLogs, gitDiff:$diff, repository:$repository, commitSha:$commitSha, timestamp:$timestamp}')
 
-          if [[ -n "${REPORT_URL:-}" ]]; then
-            CURL_HEADERS=(-H "Content-Type: application/json")
-            [[ -n "${REPORT_TOKEN:-}" ]] && CURL_HEADERS+=(-H "Authorization: Bearer $REPORT_TOKEN")
-            curl -sS -X POST "$REPORT_URL" "${CURL_HEADERS[@]}" -d "$payload" | cat
-          else
-            echo "REPORT_URL is empty; skipping report."
-          fi
+          CURL_HEADERS=(-H "Content-Type: application/json")
+          [[ -n "${REPORT_TOKEN:-}" ]] && CURL_HEADERS+=(-H "Authorization: Bearer $REPORT_TOKEN")
+          curl -sS -X POST "$REPORT_URL" "${CURL_HEADERS[@]}" -d "$payload" | cat
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Init deploy log
+        run: echo "=== Deploy job start $(date -u) ===" > deploy.log
 
       - name: Download build artifact
         uses: actions/download-artifact@v4
@@ -105,17 +126,34 @@ jobs:
           name: app-jar
           path: dist
 
+      - name: List downloaded files
+        run: |
+          set -o pipefail
+          {
+            echo "[deploy] Listing files under dist/"
+            find dist -maxdepth 5 -type f -print
+          } |& tee -a deploy.log
+
       - name: Pick JAR path
         id: pick
         shell: bash
         run: |
           set -euo pipefail
-          JAR="$(ls -1 dist/**.jar | head -n1)"
-          [[ -f "$JAR" ]] || { echo "No JAR found in dist/"; exit 1; }
-          echo "jar=$JAR" >> "$GITHUB_OUTPUT"
+          {
+            echo "[pick] Resolving JAR under dist/..."
+            JAR="$(find dist -type f -name '*.jar' | head -n1 || true)"
+            if [[ -z "${JAR}" ]]; then
+              echo "[pick][ERROR] No JAR found under dist/."
+              echo "[pick] Tree snapshot:"
+              (cd dist && find . -maxdepth 5 -type f -print || true)
+              exit 1
+            fi
+            echo "[pick] JAR=${JAR}"
+            echo "jar=${JAR}" >> "$GITHUB_OUTPUT"
+          } |& tee -a deploy.log
 
-      - name: Install jq (for failure reporter)
-        run: sudo apt-get update && sudo apt-get install -y jq
+      - name: Install jq (for reporter)
+        run: sudo apt-get update |& tee -a deploy.log && sudo apt-get install -y jq |& tee -a deploy.log
 
       - name: SCP Transfer (capture log)
         env:
@@ -124,7 +162,7 @@ jobs:
           SERVER: ${{ secrets.SERVER_IP_ADDRESS }}
         run: |
           set -o pipefail
-          scp -P "$PORT" "${{ steps.pick.outputs.jar }}" "$USER@$SERVER:/home/ubuntu/LSA_release" 2>&1 | tee deploy.log
+          scp -P "$PORT" "${{ steps.pick.outputs.jar }}" "$USER@$SERVER:/home/ubuntu/LSA_release" |& tee -a deploy.log
 
       - name: Restart server (append log)
         env:
@@ -133,8 +171,9 @@ jobs:
           SERVER: ${{ secrets.SERVER_IP_ADDRESS }}
         run: |
           set -o pipefail
-          ssh -p "$PORT" "$USER@$SERVER" 'sudo systemctl restart LSAServer.service' 2>&1 | tee -a deploy.log
+          ssh -p "$PORT" "$USER@$SERVER" 'sudo systemctl restart LSAServer.service' |& tee -a deploy.log
 
+      # 실패 시 Rooty로 보고
       - name: Report failure to Rooty (logs + git diff)
         if: failure()
         env:
@@ -142,6 +181,11 @@ jobs:
           REPORT_TOKEN: ${{ secrets.CI_REPORT_TOKEN }}
         run: |
           set -euo pipefail
+
+          # deploy.log이 비어있으면 기본 메시지라도 넣기
+          if [[ ! -s deploy.log ]]; then
+            echo "[reporter] Deploy failed but no logs captured." > deploy.log
+          fi
 
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             BASE="${{ github.event.pull_request.base.sha }}"
@@ -154,9 +198,9 @@ jobs:
           [[ -n "${HEAD:-}" ]] || HEAD="$(git rev-parse HEAD)"
 
           git diff --no-color --unified=0 "$BASE...$HEAD" > ci.diff || true
-          touch deploy.log ci.diff
+          touch ci.diff
 
-          ERROR_LOGS_JSON="$(tail -n 400 deploy.log | jq -R -s 'split("\n") | map(select(length>0)) | .[-400:]')"
+          ERROR_LOGS_JSON="$(tail -n 400 deploy.log | jq -R -s 'split(\"\\n\") | map(select(length>0)) | .[-400:]')"
           TIMESTAMP="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 
           payload=$(jq -n \
@@ -169,10 +213,7 @@ jobs:
             --argjson errorLogs "$ERROR_LOGS_JSON" \
             '{workflowName:$workflowName, jobName:$jobName, errorLogs:$errorLogs, gitDiff:$diff, repository:$repository, commitSha:$commitSha, timestamp:$timestamp}')
 
-          if [[ -n "${REPORT_URL:-}" ]]; then
-            CURL_HEADERS=(-H "Content-Type: application/json")
-            [[ -n "${REPORT_TOKEN:-}" ]] && CURL_HEADERS+=(-H "Authorization: Bearer $REPORT_TOKEN")
-            curl -sS -X POST "$REPORT_URL" "${CURL_HEADERS[@]}" -d "$payload" | cat
-          else
-            echo "REPORT_URL is empty; skipping report."
-          fi
+          CURL_HEADERS (-H "Content-Type: application/json")
+          CURL_HEADERS=(-H "Content-Type: application/json")
+          [[ -n "${REPORT_TOKEN:-}" ]] && CURL_HEADERS+=(-H "Authorization: Bearer $REPORT_TOKEN")
+          curl -sS -X POST "$REPORT_URL" "${CURL_HEADERS[@]}" -d "$payload" | cat

@@ -20,7 +20,7 @@ jobs:
       - name: Build with Gradle Wrapper (capture log)
         run: |
           set -o pipefail
-          ./gradlew --no-daemon bootjar 2>&1 | tee build.log
+          sudo ./gradlew --no-daemon bootjar 2>&1 | tee build.log
 
       - name: Report failure to Rooty (logs + git diff)
         if: failure()

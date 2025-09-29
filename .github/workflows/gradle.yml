@@ -58,9 +58,8 @@ jobs:
           path: |
             **/build/libs/*.jar
             build.log
-          if-no-files-found: error   # JAR 없으면 즉시 실패
+          if-no-files-found: error
 
-      # 실패 시 Rooty로 보고
       - name: Install jq (for reporter)
         if: failure()
         run: sudo apt-get update && sudo apt-get install -y jq
@@ -69,11 +68,10 @@ jobs:
         if: failure()
         env:
           REPORT_URL: ${{ secrets.CI_REPORT_URL }}
-          REPORT_TOKEN: ${{ secrets.CI_REPORT_TOKEN }}
+          REPORT_TOKEN: ${{ secrets.ROOTY_API_KEY }}
         run: |
           set -euo pipefail
 
-          # build.log 비어있으면 기본 메시지라도 넣기
           if [[ ! -s build.log ]]; then
             echo "[reporter] Build failed but no logs captured." > build.log
           fi
@@ -175,16 +173,14 @@ jobs:
           set -o pipefail
           ssh -p "$PORT" "$USER@$SERVER" 'sudo systemctl restart LSAServer.service' |& tee -a deploy.log
 
-      # 실패 시 Rooty로 보고
       - name: Report failure to Rooty (logs + git diff)
         if: failure()
         env:
           REPORT_URL: ${{ secrets.CI_REPORT_URL }}
-          REPORT_TOKEN: ${{ secrets.CI_REPORT_TOKEN }}
+          REPORT_TOKEN: ${{ secrets.ROOTY_API_KEY }}
         run: |
           set -euo pipefail
 
-          # deploy.log 비어있으면 기본 메시지라도 넣기
           if [[ ! -s deploy.log ]]; then
             echo "[reporter] Deploy failed but no logs captured." > deploy.log
           fi

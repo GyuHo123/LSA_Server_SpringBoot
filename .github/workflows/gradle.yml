@@ -103,7 +103,7 @@ jobs:
             '{workflowName:$workflowName, jobName:$jobName, errorLogs:$errorLogs, gitDiff:$diff, repository:$repository, commitSha:$commitSha, timestamp:$timestamp}')
 
           CURL_HEADERS=(-H "Content-Type: application/json")
-          [[ -n "${REPORT_TOKEN:-}" ]] && CURL_HEADERS+=(-H "Authorization: Bearer $REPORT_TOKEN")
+          [[ -n "${REPORT_TOKEN:-}" ]] && CURL_HEADERS+=(-H "Authorization: ApiKey $REPORT_TOKEN")
           curl -sS -X POST "$REPORT_URL" "${CURL_HEADERS[@]}" -d "$payload" | cat
 
   deploy:
@@ -212,5 +212,5 @@ jobs:
             '{workflowName:$workflowName, jobName:$jobName, errorLogs:$errorLogs, gitDiff:$diff, repository:$repository, commitSha:$commitSha, timestamp:$timestamp}')
 
           CURL_HEADERS=(-H "Content-Type: application/json")
-          [[ -n "${REPORT_TOKEN:-}" ]] && CURL_HEADERS+=(-H "Authorization: Bearer $REPORT_TOKEN")
+          [[ -n "${REPORT_TOKEN:-}" ]] && CURL_HEADERS+=(-H "Authorization: ApiKey $REPORT_TOKEN")
           curl -sS -X POST "$REPORT_URL" "${CURL_HEADERS[@]}" -d "$payload" | cat

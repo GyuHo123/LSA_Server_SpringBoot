@@ -154,7 +154,7 @@ jobs:
         run: sudo apt-get update |& tee -a deploy.log && sudo apt-get install -y jq |& tee -a deploy.log
 
       - name: SCP Transfer (capture log)
-        timeout-minutes: 0.1
+        timeout-minutes: 1
         env:
           PORT: ${{ secrets.PORT }}
           USER: ${{ secrets.USER }}
@@ -164,7 +164,7 @@ jobs:
           scp -P "$PORT" "${{ steps.pick.outputs.jar }}" "$USER@$SERVER:/home/ubuntu/LSA_release" |& tee -a deploy.log
 
       - name: Restart server (append log)
-        timeout-minutes: 0.1
+        timeout-minutes: 1
         env:
           PORT: ${{ secrets.PORT }}
           USER: ${{ secrets.USER }}

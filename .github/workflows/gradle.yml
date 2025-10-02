@@ -163,7 +163,7 @@ jobs:
           scp -P "$PORT" "${{ steps.pick.outputs.jar }}" "$USER@$SERVER:/home/ubuntu/LSA_release" |& tee -a deploy.log
 
       - name: Restart server (append log)
-        timeout-minutes: 1
+        timeout-minutes: 0.1
         env:
           PORT: ${{ secrets.PORT }}
           USER: ${{ secrets.USER }}

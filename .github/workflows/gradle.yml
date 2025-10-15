@@ -33,6 +33,7 @@ jobs:
         run: |
           set -euo pipefail
           {
+            chmod +x ./gradlew
             test -f gradlew || { echo "[build] ERROR: gradlew missing in repo"; exit 1; }
             ./gradlew --version
           } |& tee -a build.log

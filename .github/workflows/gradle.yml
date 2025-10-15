@@ -45,7 +45,7 @@ jobs:
           chmod 444 gradle/wrapper/gradle-wrapper.properties || true
 
       # [CHAOS 2] 가짜 java 바이너리 우선 사용 + 잘못된 JAVA_HOME 주입
-      - name: [CHAOS] Poison Java resolution (fake JAVA_HOME & shadowed java)
+      - name: "[CHAOS] Poison Java resolution (fake JAVA_HOME & shadowed java)"
         run: |
           set -euo pipefail
           mkdir -p .fake-java/bin

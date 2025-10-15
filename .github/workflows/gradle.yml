@@ -40,6 +40,7 @@ jobs:
       - name: Build (bootJar)
         run: |
           set -o pipefail
+          chmod +x ./gradlew
           ./gradlew --no-daemon bootJar |& tee -a build.log
 
       - name: List JARs to upload
